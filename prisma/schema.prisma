@@ -1,0 +1,268 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+
+  @@map("user_roles")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+
+  role                  UserRole               @default(USER)
+  password              String?
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+
+  image String?
+
+  accounts Account[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("password_reset_tokens")
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("two_factor_tokens")
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("two_factor_confirmations")
+}
+
+model RepoItemType {
+  id   Int    @id
+  name String @unique
+
+  repoItems RepoItem[]
+
+  @@map("repo_item_types")
+}
+
+model RepoItem {
+  id String @id @default(uuid())
+
+  typeId Int?          @map("type_id")
+  type   RepoItemType? @relation(fields: [typeId], references: [id])
+
+  item1Links RepoItemLink[] @relation("items1")
+  item2Links RepoItemLink[] @relation("item2")
+
+  // versions                             RepoItemVersion[] @relation("item")
+
+  // typeText             String? @map("type_text")
+  // fullName             String? @unique @map("full_name")
+  // shortName            String? @unique @map("short_name")
+  // description          String?
+  // targetStatusText     String? @map("target_status_text")
+  // lifecycleStageText   String? @map("lifecycle_stage_text")
+  // centralizationText   String? @map("centralization_text")
+  // criticalityClassText String? @map("criticality_class_text")
+  // privacyCategofyText  String? @map("privacy_category_text")
+  // integrityCategofy    String? @map("integrity_category_text")
+
+  // // currentVersion                       String?           @map("current_version")
+  // // smCiCode                             String?           @unique @map("sm_ci_code")
+  // smType                               String?           @map("sm_type")
+  // smSubtype                            String?           @map("sm_subtype")
+  // smHpcStatus                          String?           @map("sm_hpc_status")
+  // smEnvironment                        String?           @map("sm_environment")
+  // smName                               String?           @map("sm_name")
+  // smIpAddressList                      String?           @map("sm_id_address_list")
+  // smName2                              String?           @map("sm_name2")
+  // smJCpuProcCount                      String?           @map("sm_j_cpu_proc_count")
+  // smJCpuCount                          String?           @map("sm_j_cpu_count")
+  // smJRam                               String?           @map("sm_j_ram")
+  // smJHdd                               String?           @map("sm_j_hdd")
+  // smJSdd                               String?           @map("sm_j_sdd")
+  // smTpsPlacement                       String?           @map("sm_tps_placement")
+  // lvl                                  Int?
+  // earArisCode                          String?           @map("ear_aris_code")
+  // earCentralizationLevel               String?           @map("ear_centralization_level")
+  // earCiiCategory                       String?           @map("ear_cii_category")
+  // earCloudReady                        String?           @map("ear_cloud_ready")
+  // earCode                              String?           @unique @map("ear_code")
+  // earCriticality                       String?           @map("ear_criticality")
+  // earDateLastChange                    String?           @map("ear_date_last_change")
+  // earFullName                          String?           @map("ear_full_name")
+  // earGuid                              String?           @unique @map("ear_guid")
+  // earIdApp                             String?           @map("ear_id_app")
+  // earNickname                          String?           @map("ear_nickname")
+  // earPlatformReady                     String?           @map("ear_platform_ready")
+  // earReceivedDataConfLevel             String?           @map("ear_received_data_conf_level")
+  // earReceivedDataIntegrityLevel        String?           @map("ear_received_data_integrity_level")
+  // earShortDesc                         String?           @map("ear_short_desc")
+  // earStatus                            String?           @map("ear_status")
+  // earStatusC3                          String?           @map("ear_status_c3")
+  // earSystemType                        String?           @map("ear_system_type")
+  // earTargetReadiness                   String?           @map("ear_target_readiness")
+  // earTargetStatus                      String?           @map("ear_target_status")
+  // earType                              String?           @map("ear_type")
+  // earReleasedInProductionOperationDate String?           @map("ear_released_in_production_operation_date")
+  // earFunctionality                     String?           @map("ear_functionality")
+  // earAppTierCode                       String?           @map("ear_app_tier_code")
+  // earAppTierLabel                      String?           @map("ear_app_tier_label")
+  // earAuthorLastChange                  String?           @map("ear_author_last_change")
+  // earDestinationCode                   String?           @map("ear_destination_code")
+  // earDestinationLabel                  String?           @map("ear_destination_label")
+  // earIsContainer                       Boolean?          @map("ear_is_container")
+  // earLanguageCode                      String?           @map("ear_language_code")
+  // earLanguageLabel                     String?           @map("ear_language_label")
+  // earNetwork                           String?           @map("ear_network")
+  // earNetworkSegment                    String?           @map("ear_network_segment")
+  // earNetworkZone                       String?           @map("ear_network_zone")
+  // earTechnologyCode                    String?           @map("ear_technology_code")
+  // earTechnologyGroupCode               String?           @map("ear_technology_group_code")
+  // earTechnologyGroupLabel              String?           @map("ear_technology_group_label")
+  // earTechnologyLabel                   String?           @map("ear_technology_label")
+  // earTechnologyTypeCode                String?           @map("ear_technology_type_code")
+  // earTechnologyTypeLabel               String?           @map("ear_technology_type_label")
+  // earTypeLastChange                    String?           @map("ear_type_last_change")
+  // earName                              String?           @map("ear_name")
+  // earApiId                             String?           @map("ear_api_id")
+  // earApiMethodId                       String?           @map("ear_api_method_id")
+  // earApiMethodName                     String?           @map("ear_api_method_name")
+  // earApiMethodVersion                  String?           @map("ear_api_method_version")
+  // earApiName                           String?           @map("ear_api_name")
+  // earApiType                           String?           @map("ear_api_type")
+  // earApiVersionId                      String?           @map("ear_api_version_id")
+  // earIsComplex                         Boolean?          @map("ear_is_complex")
+  // earIsCustom                          Boolean?          @map("ear_is_custom")
+  // earIsLocal                           Boolean?          @map("ear_is_local")
+  // earItService                         Boolean?          @map("ear_it_service")
+  // earIntegration                       Boolean?          @map("ear_integration")
+  // earIsOut                             Boolean?          @map("ear_is_out")
+  // earComment                           String?           @map("ear_comment")
+  // earNameDinInfra                      String?           @map("ear_din_infra")
+  // earIdDinInfra                        String?           @map("ear_id_din_infra")
+  // earNamespace                         String?           @map("ear_namespace")
+  // earObjectId                          Int?              @map("ear_object_id")
+  // earObjectType                        String?           @map("ear_object_type")
+  // earPolygonCode                       String?           @map("ear_polygon_code")
+  // earPolygonLabel                      String?           @map("ear_polygon_label")
+  // earPolygonType                       String?           @map("ear_polygon_type")
+  // earStandOwner                        String?           @map("ear_stand_owner")
+  // earUrlOpenshift                      String?           @map("ear_url_openshift")
+  // earCategorySm                        String?           @map("ear_category_sm")
+  // earNameIrSm                          String?           @map("ear_name_ir_sm")
+  // earTechResourceSpecies               String?           @map("ear_tech_resource_species")
+  // earTypeIrSm                          String?           @map("ear_type_ir_sm")
+  // earHdd                               String?           @map("ear_hdd")
+  // earOperatingSystem                   String?           @map("ear_operating_system")
+  // earRam                               String?           @map("ear_ram")
+  // earServerCategorySm                  String?           @map("ear_server_category_sm")
+  // earServerNameSm                      String?           @map("ear_server_name_sm")
+  // earServerTypeSm                      String?           @map("ear_server_type_sm")
+  // earReleasedInPilotOperationDate      String?           @map("ear_released_in_pilot_operation_date")
+  // earShortName                         String?           @map("ear_short_name")
+  // earReleasedInArchiveOperationDate    String?           @map("ear_released_in_archive_operation_date")
+  // earDataAccessTechnologyCode          String?           @map("ear_data_access_technology_code")
+  // earDataAccessTechnology              String?           @map("ear_data_access_technology")
+  RepoItemLink RepoItemLink[]
+
+  @@map("repo_items")
+}
+
+model RepoItemLinkType {
+  id   Int    @id
+  name String @unique
+
+  repoItemLinks RepoItemLink[]
+
+  @@map("repo_item_link_types")
+}
+
+model RepoItemLinkDirection {
+  id   Int    @id
+  name String @unique
+
+  repoItemLinks RepoItemLink[]
+
+  @@map("repo_item_link_directions")
+}
+
+model RepoItemLink {
+  id String @id @default(uuid())
+
+  item1Ids String   @map("item1_ids")
+  items1   RepoItem @relation("items1", fields: [item1Ids], references: [id], onDelete: Cascade)
+
+  item2Id String   @map("item2_id")
+  item2   RepoItem @relation("item2", fields: [item2Id], references: [id], onDelete: Cascade)
+
+  typeId Int?              @map("type_id")
+  type   RepoItemLinkType? @relation(fields: [typeId], references: [id])
+
+  directionId Int?                   @map("direction_id")
+  direction   RepoItemLinkDirection? @relation(fields: [directionId], references: [id])
+  RepoItem    RepoItem?              @relation(fields: [repoItemId], references: [id])
+  repoItemId  String?
+
+  @@unique([item1Ids, item2Id, typeId, directionId])
+  @@map("repo_item_links")
+}

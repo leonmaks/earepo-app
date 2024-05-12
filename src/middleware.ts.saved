@@ -1,0 +1,60 @@
+// import NextAuth from "next-auth"
+
+// import providers from "@/auth/providers"
+// import {
+//   DEFAULT_LOGIN_REDIRECT,
+//   apiAuthPrefix,
+//   authRoutes,
+//   publicRoutes,
+// } from "@/config/auth-routes"
+
+// const { auth } = NextAuth(providers)
+
+// export default auth((req) => {
+//   const { nextUrl } = req
+//   const isLoggedIn = !!req.auth
+//   // console.log(
+//   //   "middleware: ROUTE=",
+//   //   req.nextUrl.pathname,
+//   //   "isLoggedIn=",
+//   //   isLoggedIn
+//   // )
+
+//   //
+//   // For API Auth routes - DO NOTHING.
+//   //
+//   if (nextUrl.pathname.startsWith(apiAuthPrefix)) return
+
+//   // //
+//   // // For logged in users on Auth routes - redirect to DEFAULT_LOGIN_REDIRECT
+//   // //
+//   // if (authRoutes.includes(nextUrl.pathname) && isLoggedIn)
+//   //   return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+
+//   //
+//   // For NOT logged in users on NOT Public routes - redirect to /auth/login
+//   //
+
+//   // if (!publicRoutes.includes(nextUrl.pathname) && !isLoggedIn)
+//   //   return Response.redirect(new URL("/auth/login", nextUrl))
+
+//   // // const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
+
+//   // // if (!isLoggedIn && !isPublicRoute) {
+//   // //   let callbackUrl = nextUrl.pathname
+//   // //   if (nextUrl.search) {
+//   // //     callbackUrl += nextUrl.search
+//   // //   }
+//   // //   const encodedCallbackUrl = encodeURIComponent(callbackUrl)
+//   // //   return Response.redirect(
+//   // //     new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+//   // //   )
+//   // // }
+
+//   return
+// })
+
+// // Optionally, don't invoke Middleware on some paths
+// export const config = {
+//   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+// }
