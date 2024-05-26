@@ -1,27 +1,27 @@
-import { db } from "@/db/knex-db"
+// import { db } from "@/db/knex-db"
 
-export const getVerificationTokenByToken = async (token: string) => {
-  return null
-  // try {
-  //   const verificationToken = await db.verificationToken.findUnique({
-  //     where: { token },
-  //   })
+// export const getVerificationTokenByToken = async (token: string) => {
+//   return null
+//   // try {
+//   //   const verificationToken = await db.verificationToken.findUnique({
+//   //     where: { token },
+//   //   })
 
-  //   return verificationToken
-  // } catch {
-  //   return null
-  // }
-}
+//   //   return verificationToken
+//   // } catch {
+//   //   return null
+//   // }
+// }
 
-export const getVerificationTokenByEmail = async (email: string) => {
-  return null
-  // try {
-  //   const verificationToken = await db.verificationToken.findFirst({
-  //     where: { email },
-  //   })
+// export const getVerificationTokenByEmail = async (email: string) => {
+//   return null
+//   // try {
+//   //   const verificationToken = await db.verificationToken.findFirst({
+//   //     where: { email },
+//   //   })
 
-  //   return verificationToken
-  // } catch {
-  //   return null
-  // }
-}
+//   //   return verificationToken
+//   // } catch {
+//   //   return null
+//   // }
+// }

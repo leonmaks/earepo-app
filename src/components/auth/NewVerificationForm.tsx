@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { useSearchParams } from 'next/navigation'
 
-import { newVerification } from '@/server-actions/auth/new-verification'
+import { newVerification } from '@/server-action/auth/new-verification'
 import { CardWrapper } from '@/components/auth/CardWrapper'
 import { FormError } from '@/components/FormError'
 import { FormSuccess } from '@/components/FormSuccess'

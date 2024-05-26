@@ -1,23 +1,51 @@
 import type { Config } from "tailwindcss"
+import { fontFamily } from "tailwindcss/defaultTheme"
 
 const config = {
-  darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+  // Lema 240525_1200: Made large container width =100%
+  // Custom container width in Tailwind css:
+  // https://stefvanlooveren.me/blog/custom-container-width-tailwind-css
+  corePlugins: {
+    container: false,
+  },
+  plugins: [
+    function ({ addComponents }: { addComponents: any }) {
+      addComponents({
+        ".container": {
+          maxWidth: "100%",
+          "@screen sm": {
+            maxWidth: "640px",
+          },
+          "@screen md": {
+            maxWidth: "768px",
+          },
+          "@screen lg": {
+            maxWidth: "1280px",
+          },
+          "@screen xl": {
+            maxWidth: "1400px",
+          },
+        },
+      })
+    },
+    require("tailwindcss-animate"),
   ],
+  darkMode: ["class"],
+  content: ["./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      // screens: {
+      //   "2xl": "1400px",
+      // },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", ...fontFamily.sans],
+        // mono: ["var(--font-mono)", ...fontFamily.mono],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -74,7 +102,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // plugins: [require("tailwindcss-animate")],
 } satisfies Config
 
 export default config

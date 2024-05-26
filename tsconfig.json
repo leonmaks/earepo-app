@@ -15,6 +15,14 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "incremental": true,
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
     "plugins": [
       {
         "name": "next"
@@ -25,5 +33,10 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "**/*.saved", "**/*.SAVED"]
+  "exclude": [
+    "node_modules",
+    "./scripts/build-registry.mts",
+    "**/*.saved",
+    "**/*.SAVED"
+  ]
 }

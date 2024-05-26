@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { NewPasswordSchema } from "@/schemas";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/shared/ui/input";
 import {
   Form,
   FormControl,
@@ -15,9 +15,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,  
-} from "@/components/ui/form";
+} from "@/shared/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper"
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { newPassword } from "@/actions/new-password";

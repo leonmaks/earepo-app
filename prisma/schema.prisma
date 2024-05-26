@@ -10,6 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 
+// Auth
+// 
+
 enum UserRole {
   ADMIN
   USER
@@ -21,7 +25,7 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map("email_verified")
 
   role                  UserRole               @default(USER)
   password              String?
@@ -31,16 +35,27 @@ model User {
   image String?
 
   accounts Account[]
+  sessions Session[]
 
   @@map("users")
 }
 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            String  @map("user_id")
   type              String
   provider          String
-  providerAccountId String
+  providerAccountId String  @map("provider_account_id")
   refresh_token     String? @db.Text
   access_token      String? @db.Text
   expires_at        Int?
@@ -95,25 +110,57 @@ model TwoFactorConfirmation {
   @@map("two_factor_confirmations")
 }
 
-model RepoItemType {
+// 
+// Repo
+// 
+
+model RepoObjType {
   id   Int    @id
   name String @unique
 
-  repoItems RepoItem[]
+  repoObjAttrDefs RepoObjAttrDef[]
+  repoObjs        RepoObj[]
 
-  @@map("repo_item_types")
+  @@map("repo_obj_types")
 }
 
-model RepoItem {
-  id String @id @default(uuid())
+enum RepoObjAttrType {
+  STRING
+  NUMBER
 
-  typeId Int?          @map("type_id")
-  type   RepoItemType? @relation(fields: [typeId], references: [id])
+  @@map("repo_obj_attr_types")
+}
 
-  item1Links RepoItemLink[] @relation("items1")
-  item2Links RepoItemLink[] @relation("item2")
+model RepoObjAttrDef {
+  id String @id @default(cuid())
 
-  // versions                             RepoItemVersion[] @relation("item")
+  // Repo  Type (i.e. System, Subsystem)
+  objTypeId Int         @map("obj_type_id")
+  objType   RepoObjType @relation(fields: [objTypeId], references: [id])
+
+  // Data Validation Attrs
+  name     String
+  type     RepoObjAttrType @default(STRING)
+  optional Boolean?
+  trim     Boolean?
+
+  // Form Attrs
+  label String
+
+  @@unique([name, objTypeId])
+  @@map("repo_obj_attr_defs")
+}
+
+model RepoObj {
+  id String @id @default(cuid())
+
+  typeId Int?         @map("type_id")
+  type   RepoObjType? @relation(fields: [typeId], references: [id])
+
+  obj1Links RepoObjLink[] @relation("obj1")
+  obj2Links RepoObjLink[] @relation("obj2")
+
+  // versions                             RepoObjVersion[] @relation("objs")
 
   // typeText             String? @map("type_text")
   // fullName             String? @unique @map("full_name")
@@ -223,46 +270,52 @@ model RepoItem {
   // earReleasedInArchiveOperationDate    String?           @map("ear_released_in_archive_operation_date")
   // earDataAccessTechnologyCode          String?           @map("ear_data_access_technology_code")
   // earDataAccessTechnology              String?           @map("ear_data_access_technology")
-  RepoItemLink RepoItemLink[]
 
-  @@map("repo_items")
+  @@map("repo_objs")
 }
 
-model RepoItemLinkType {
+model RepoObjLinkType {
   id   Int    @id
   name String @unique
 
-  repoItemLinks RepoItemLink[]
+  repoObjLinks RepoObjLink[]
 
-  @@map("repo_item_link_types")
+  @@map("repo_obj_link_types")
 }
 
-model RepoItemLinkDirection {
-  id   Int    @id
-  name String @unique
+enum RepoObjLinkDirection {
+  FORWARD
+  BACKWARD
 
-  repoItemLinks RepoItemLink[]
-
-  @@map("repo_item_link_directions")
+  @@map("repo_obj_link_directions")
 }
 
-model RepoItemLink {
-  id String @id @default(uuid())
+model RepoObjLink {
+  id String @id @default(cuid())
 
-  item1Ids String   @map("item1_ids")
-  items1   RepoItem @relation("items1", fields: [item1Ids], references: [id], onDelete: Cascade)
+  obj1Id String  @map("item1_id")
+  obj1   RepoObj @relation("obj1", fields: [obj1Id], references: [id], onDelete: Cascade)
 
-  item2Id String   @map("item2_id")
-  item2   RepoItem @relation("item2", fields: [item2Id], references: [id], onDelete: Cascade)
+  obj2Id String  @map("obj2_id")
+  obj2   RepoObj @relation("obj2", fields: [obj2Id], references: [id], onDelete: Cascade)
 
-  typeId Int?              @map("type_id")
-  type   RepoItemLinkType? @relation(fields: [typeId], references: [id])
+  typeId Int?             @map("type_id")
+  type   RepoObjLinkType? @relation(fields: [typeId], references: [id])
 
-  directionId Int?                   @map("direction_id")
-  direction   RepoItemLinkDirection? @relation(fields: [directionId], references: [id])
-  RepoItem    RepoItem?              @relation(fields: [repoItemId], references: [id])
-  repoItemId  String?
+  direction RepoObjLinkDirection @default(FORWARD)
 
-  @@unique([item1Ids, item2Id, typeId, directionId])
-  @@map("repo_item_links")
+  @@unique([obj1Id, obj2Id, typeId, direction])
+  @@map("repo_obj_links")
+}
+
+// 
+// Boards
+// 
+
+model Topic {
+  id          String @id @default(cuid())
+  subject     String
+  description String
+
+  @@map("topics")
 }

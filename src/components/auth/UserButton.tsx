@@ -8,8 +8,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+} from '@/shared/ui/dropdown-menu'
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { LogoutButton } from '@/components/auth/LogoutButton'
 
